@@ -18,6 +18,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             ChatBotTheme {
                 Surface(
+
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background,
                 ) {
