@@ -12,6 +12,7 @@ android {
     compileSdk = 35
 
     defaultConfig {
+        buildConfigField("String", "apiKey", "\"your_api_key_here\"")
         applicationId = "com.example.chatbot"
         minSdk = 24
         targetSdk = 35
