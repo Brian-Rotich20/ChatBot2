@@ -25,6 +25,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -35,21 +36,46 @@ import javax.inject.Inject
 class ChatViewModel @Inject constructor() : ViewModel() {
     private val _uiState: MutableStateFlow<UiState> = MutableStateFlow(UiState.Initial)
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
+    private val _mainState = MutableStateFlow(MainState())
+    val mainState = _mainState.asStateFlow()
 
 
     var prompt by mutableStateOf("")
         private set
 
-    var roomId by mutableStateOf("")
-        private set
 
-    var allRooms by mutableStateOf(emptyList<ChatRoom>())
-    var allChats by mutableStateOf(emptyList<Chat>())
+    fun updateCurrentChats(list: List<Chat>) {
+        _mainState.update {
+            it.copy(
+                allChats = list
+            )
+        }
+    }
+    fun updateCurrentRooms(list: List<ChatRoom>) {
+        _mainState.update {
+            it.copy(
+                allRooms = list
+            )
+        }
+    }
 
 
     fun updateCurrentRoomId(id: String) {
-        roomId = id
+        _mainState.update {
+            it.copy(
+                roomId = id
+            )
+        }
     }
+
+    fun updateCurrentIndex(index: Int) {
+        _mainState.update {
+            it.copy(
+                currentIndex = index
+            )
+        }
+    }
+
 
     fun insertChat(chat: Chat, context: Context) {
         val repo = ChatRepo(context)
@@ -68,7 +94,7 @@ class ChatViewModel @Inject constructor() : ViewModel() {
     fun getChats(context: Context): StateFlow<List<Chat>> {
         val repo = ChatRepo(context)
         return repo.getAllChats(
-            roomId
+            _mainState.value.roomId
         ).stateIn(
             viewModelScope,
             SharingStarted.Lazily,
@@ -100,11 +126,12 @@ class ChatViewModel @Inject constructor() : ViewModel() {
     fun sendPrompt(context: Context) {
         if (prompt != "") {
             _uiState.value = UiState.Loading
-            if (roomId == "") {
+            val roomId = _mainState.value.roomId
+            if (roomId == "...") {
                 //create a new room
                 //insert the chat
                 viewModelScope.launch {
-                    roomId = getCurrentFormattedDate()
+                    updateCurrentRoomId(getCurrentFormattedDate())
                     delay(20)
                     insertChatRoom(
                         chatRoom = ChatRoom(
@@ -113,6 +140,10 @@ class ChatViewModel @Inject constructor() : ViewModel() {
                         ),
                         context = context
                     )
+                    delay(20)
+
+                    updateCurrentIndex(0)
+
 
                 }
             }

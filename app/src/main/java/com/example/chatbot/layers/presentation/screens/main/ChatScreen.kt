@@ -1,6 +1,9 @@
 package com.example.chatbot.layers.presentation.screens.main
 
 
+import android.os.Build
+import androidx.annotation.RequiresApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -39,6 +42,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -46,25 +51,38 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.chatbot.layers.presentation.comps.ChatComp
 import com.example.chatbot.R
+import com.example.chatbot.layers.presentation.comps.ChatComp
+import com.example.chatbot.layers.presentation.theme.mediumShape
+import com.example.chatbot.layers.presentation.theme.smallShape
+import com.example.chatbot.layers.presentation.theme.smallText
+import com.example.chatbot.layers.utils.getTimeDifference
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ChatScreen(
     model: ChatViewModel = hiltViewModel()
 ) {
     val uiState by model.uiState.collectAsState()
+    val mainState = model.mainState.collectAsState().value
     val context = LocalContext.current
     var showTypingIndicator by remember { mutableStateOf(false) }
     var moveInputToBottom by remember { mutableStateOf(false) }
+    var shouldRefresh by remember { mutableStateOf(false) }
+
     val userInput = model.prompt
     val allRooms by remember { model.getChatsRoom(context) }.collectAsState()
 
-    val allChats by model.getChats(context).collectAsState()
-    model.allChats = allChats
+    val allChats by remember { model.getChats(context) }.collectAsState()
+    model.updateCurrentChats(allChats)
+
+    if (shouldRefresh) {
+        val allChats by model.getChats(context).collectAsState()
+        model.updateCurrentChats(allChats)
+        shouldRefresh = false
+    }
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -80,25 +98,74 @@ fun ChatScreen(
             else -> {}
         }
     }
+    LaunchedEffect(key1 = mainState.roomId) {
+        //clear the current chats
+        model.updateCurrentChats(emptyList())
+
+        //refill
+        shouldRefresh = true
+    }
 
 
     ModalNavigationDrawer(
         drawerState = drawerState, // Add this line
         drawerContent = {
-            ModalDrawerSheet {
+            ModalDrawerSheet(
+                modifier = Modifier
+                    .fillMaxWidth(0.65f)
+                    .padding(start = 10.dp, bottom = 20.dp)
+                    .clip(shape = mediumShape)
+                    .shadow(elevation = 3.dp)
+            ) {
                 Text(
-                    "Chat Rooms",
+                    "History",
                     modifier = Modifier.padding(16.dp),
                     style = MaterialTheme.typography.headlineSmall
                 )
+                Spacer(modifier = Modifier.height(20.dp))
                 HorizontalDivider()
-                Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-                    allRooms.forEach { room ->
+                Spacer(modifier = Modifier.height(20.dp))
+                Column(
+                    modifier = Modifier
+                        .verticalScroll(rememberScrollState())
+                        .fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    allRooms.reversed().forEachIndexed { index, room ->
+                        val day = getTimeDifference(room.id)
                         NavigationDrawerItem(
                             label = { Text(room.title) },
-                            selected = false,
-                            onClick = { /* Handle room selection */ }
+                            selected = index == mainState.currentIndex,
+                            onClick = {
+                                model.updateCurrentRoomId(
+                                    room.id
+                                )
+                                model.updateCurrentIndex(index = index)
+                                scope.launch {
+                                    if (drawerState.isClosed) {
+                                        drawerState.open()
+                                    } else {
+                                        drawerState.close()
+                                    }
+                                }
+                            },
+                            badge = {
+                                Text(
+                                    fontSize = smallText,
+                                    text = day,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth(0.96f)
+                                .clip(smallShape)
+                                .background(
+                                    MaterialTheme.colorScheme.inverseOnSurface.copy(
+                                        alpha = if (day == "just now") 0.9f else 0.3f
+                                    )
+                                )
                         )
+                        Spacer(Modifier.height(10.dp))
                     }
                 }
             }
@@ -139,9 +206,9 @@ fun ChatScreen(
                     if (showTypingIndicator) TypingIndicator() else Spacer(Modifier.width(5.dp))
 
                 }
-                if (model.allChats.isNotEmpty()) {
+                if (allChats.isNotEmpty()) {
                     LazyColumn(modifier = Modifier.fillMaxHeight(0.75f)) {
-                        items(allChats) {
+                        items(mainState.allChats) {
                             ChatComp(it) {
                                 model.copyToClipboard(
                                     context = context,

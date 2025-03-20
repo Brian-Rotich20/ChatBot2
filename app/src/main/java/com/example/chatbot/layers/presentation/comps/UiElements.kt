@@ -63,8 +63,8 @@ fun ChatComp(
 
         Box(
             modifier = Modifier
-                .fillMaxWidth(0.5f) // Set width to 50% of the parent
-                .heightIn(max = 70.dp) // Restrict maximum height to 70.dp
+                .fillMaxWidth(0.75f) // Set width to 50% of the parent
+                .heightIn(max = 270.dp) // Restrict maximum height to 70.dp
                 .clip(RoundedCornerShape(5.dp))
                 .background(MaterialTheme.colorScheme.inverseOnSurface)
                 .verticalScroll(rememberScrollState()) // Make content scrollable beyond 70.dp

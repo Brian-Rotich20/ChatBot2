@@ -1,5 +1,6 @@
 package com.example.chatbot.layers.presentation.theme
 
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -9,10 +10,19 @@ import androidx.compose.ui.unit.sp
 import com.example.chatbot.layers.presentation.constants.EXTRA_LARGE_TEXT
 import com.example.chatbot.layers.presentation.constants.ICON_LARGE
 import com.example.chatbot.layers.presentation.constants.ICON_STANDARD
+import com.example.chatbot.layers.presentation.constants.LARGE_SHAPE
 import com.example.chatbot.layers.presentation.constants.LARGE_TEXT
 import com.example.chatbot.layers.presentation.constants.MEDIUM_LARGE_TEXT
+import com.example.chatbot.layers.presentation.constants.MEDIUM_SHAPE
 import com.example.chatbot.layers.presentation.constants.MEDIUM_SMALL_TEXT
+import com.example.chatbot.layers.presentation.constants.SMALL_SHAPE
 import com.example.chatbot.layers.presentation.constants.SMALL_TEXT
+
+
+/*this will describe all t he type of shapes that will be held in amy composable*/
+val smallShape = RoundedCornerShape(SMALL_SHAPE.dp)
+val largeShape = RoundedCornerShape(LARGE_SHAPE.dp)
+val mediumShape = RoundedCornerShape(MEDIUM_SHAPE.dp)
 
 /**for icons*/
 val iconStandard = ICON_STANDARD.dp
