@@ -1,4 +1,4 @@
-package com.example.chatbot
+package com.example.chatbot.layers.presentation.screens.main
 
 
 import androidx.compose.foundation.clickable
@@ -46,6 +46,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.chatbot.layers.presentation.comps.ChatComp
+import com.example.chatbot.R
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 

@@ -1,4 +1,4 @@
-package com.example.chatbot.ui.theme.data.entities
+package com.example.chatbot.layers.data.entities
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

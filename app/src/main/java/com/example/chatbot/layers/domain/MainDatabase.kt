@@ -1,13 +1,13 @@
-package com.example.chatbot.ui.theme
+package com.example.chatbot.layers.domain
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.example.chatbot.ui.theme.data.dao.ChatDao
-import com.example.chatbot.ui.theme.data.dao.ChatRoomDao
-import com.example.chatbot.ui.theme.data.entities.Chat
-import com.example.chatbot.ui.theme.data.entities.ChatRoom
+import com.example.chatbot.layers.data.dao.ChatDao
+import com.example.chatbot.layers.data.dao.ChatRoomDao
+import com.example.chatbot.layers.data.entities.Chat
+import com.example.chatbot.layers.data.entities.ChatRoom
 
 @Database(
     entities = [

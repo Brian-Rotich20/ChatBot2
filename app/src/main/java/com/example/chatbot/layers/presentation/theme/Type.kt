@@ -1,13 +1,34 @@
-package com.example.chatbot.ui.theme
+package com.example.chatbot.layers.presentation.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.chatbot.layers.presentation.constants.EXTRA_LARGE_TEXT
+import com.example.chatbot.layers.presentation.constants.ICON_LARGE
+import com.example.chatbot.layers.presentation.constants.ICON_STANDARD
+import com.example.chatbot.layers.presentation.constants.LARGE_TEXT
+import com.example.chatbot.layers.presentation.constants.MEDIUM_LARGE_TEXT
+import com.example.chatbot.layers.presentation.constants.MEDIUM_SMALL_TEXT
+import com.example.chatbot.layers.presentation.constants.SMALL_TEXT
+
+/**for icons*/
+val iconStandard = ICON_STANDARD.dp
+val iconLarge = ICON_LARGE.dp
+
+/*this will describe all text sizes that will be used in the entire project*/
+val smallText = SMALL_TEXT.sp
+val largeText = LARGE_TEXT.sp
+val extraLargeText = EXTRA_LARGE_TEXT.sp
+val mediumText = MEDIUM_SMALL_TEXT.sp
+val mediumLargeText = MEDIUM_LARGE_TEXT.sp
+
 
 // Set of Material typography styles to start with
 val Typography = Typography(
+
     bodyLarge = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Normal,

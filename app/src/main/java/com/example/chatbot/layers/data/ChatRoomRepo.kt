@@ -1,9 +1,9 @@
-package com.example.chatbot.ui.theme.data
+package com.example.chatbot.layers.data
 
 import android.content.Context
-import com.example.chatbot.ui.theme.MainDatabase
-import com.example.chatbot.ui.theme.data.dao.ChatRoomDao
-import com.example.chatbot.ui.theme.data.entities.ChatRoom
+import com.example.chatbot.layers.domain.MainDatabase
+import com.example.chatbot.layers.data.dao.ChatRoomDao
+import com.example.chatbot.layers.data.entities.ChatRoom
 import kotlinx.coroutines.flow.Flow
 
 class ChatRoomRepo(context: Context) : ChatRoomDao {

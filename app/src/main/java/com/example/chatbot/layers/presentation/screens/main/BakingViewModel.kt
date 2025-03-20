@@ -1,5 +1,5 @@
 // ChatViewModel.kt
-package com.example.chatbot
+package com.example.chatbot.layers.presentation.screens.main
 
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -10,10 +10,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.chatbot.ui.theme.data.ChatRepo
-import com.example.chatbot.ui.theme.data.ChatRoomRepo
-import com.example.chatbot.ui.theme.data.entities.Chat
-import com.example.chatbot.ui.theme.data.entities.ChatRoom
+import com.example.chatbot.BuildConfig
+import com.example.chatbot.layers.data.ChatRepo
+import com.example.chatbot.layers.data.ChatRoomRepo
+import com.example.chatbot.layers.data.entities.Chat
+import com.example.chatbot.layers.data.entities.ChatRoom
 import com.google.ai.client.generativeai.GenerativeModel
 import com.google.ai.client.generativeai.type.content
 import kotlinx.coroutines.Dispatchers

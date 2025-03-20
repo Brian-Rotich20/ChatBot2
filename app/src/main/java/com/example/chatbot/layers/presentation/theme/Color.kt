@@ -1,4 +1,4 @@
-package com.example.chatbot.ui.theme
+package com.example.chatbot.layers.presentation.theme
 
 import androidx.compose.ui.graphics.Color
 

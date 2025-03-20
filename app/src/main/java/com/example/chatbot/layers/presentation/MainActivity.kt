@@ -1,4 +1,4 @@
-package com.example.chatbot
+package com.example.chatbot.layers.presentation
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -6,11 +6,9 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import com.example.chatbot.ui.theme.ChatBotTheme
+import com.example.chatbot.layers.presentation.screens.main.ChatScreen
+import com.example.chatbot.layers.presentation.theme.ChatBotTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

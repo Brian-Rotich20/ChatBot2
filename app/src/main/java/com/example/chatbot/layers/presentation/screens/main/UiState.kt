@@ -1,5 +1,5 @@
 // UiState.kt
-package com.example.chatbot
+package com.example.chatbot.layers.presentation.screens.main
 
 sealed interface UiState {
     object Initial : UiState

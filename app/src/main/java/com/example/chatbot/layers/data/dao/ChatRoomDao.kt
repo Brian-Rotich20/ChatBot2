@@ -1,9 +1,9 @@
-package com.example.chatbot.ui.theme.data.dao
+package com.example.chatbot.layers.data.dao
 
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Upsert
-import com.example.chatbot.ui.theme.data.entities.ChatRoom
+import com.example.chatbot.layers.data.entities.ChatRoom
 import kotlinx.coroutines.flow.Flow
 
 @Dao
