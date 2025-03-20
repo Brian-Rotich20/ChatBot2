@@ -32,6 +32,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -60,7 +61,6 @@ fun ChatScreen(model: ChatViewModel = viewModel()) {
     val allChats by model.getChats(context).collectAsState()
 
 
-    var isDrawerOpen by remember { mutableStateOf(false) }
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     LaunchedEffect(uiState) {
@@ -119,7 +119,7 @@ fun ChatScreen(model: ChatViewModel = viewModel()) {
                         painter = painterResource(R.drawable.list),
                         contentDescription = "Toggle Drawer",
                         modifier = Modifier
-                            .size(30.dp)
+                            .size(20.dp)
                             .clickable {
                                 scope.launch {
                                     if (drawerState.isClosed) {
@@ -145,11 +145,11 @@ fun ChatScreen(model: ChatViewModel = viewModel()) {
                             }
                         }
                     }
-                }else{
-                    Column (
+                } else {
+                    Column(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalAlignment = Alignment.CenterHorizontally
-                    ){
+                    ) {
                         Icon(
                             painter = painterResource(R.drawable.chatbot),
                             contentDescription = "",
@@ -157,7 +157,7 @@ fun ChatScreen(model: ChatViewModel = viewModel()) {
                             tint = Color.White
                         )
                         Spacer(Modifier.height(20.dp))
-                        TypingTextAnimation( "Hello?,what i can i help with?")
+                        TypingTextAnimation("Hello?,what i can i help with?")
                     }
                 }
                 Box(
@@ -190,7 +190,7 @@ fun ChatScreen(model: ChatViewModel = viewModel()) {
 }
 
 @Composable
-fun TypingTextAnimation(fullText: String, typingSpeed: Long = 50L,textSize:Int=24) {
+fun TypingTextAnimation(fullText: String, typingSpeed: Long = 50L, textSize: Int = 24) {
     var displayedText by remember { mutableStateOf("") }
 
     LaunchedEffect(fullText) {
@@ -215,7 +215,7 @@ fun TypingTextAnimation(fullText: String, typingSpeed: Long = 50L,textSize:Int=2
 // Typing Indicator with Animated Dots
 @Composable
 fun TypingIndicator() {
-    var dotCount by remember { mutableStateOf(0) }
+    var dotCount by remember { mutableIntStateOf(0) }
 
     LaunchedEffect(Unit) {
         while (true) {

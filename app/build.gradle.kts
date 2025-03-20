@@ -4,6 +4,8 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.google.android.libraries.mapsplatform.secrets.gradle.plugin)
     id("kotlin-kapt") // Add this for Room
+    id("com.google.dagger.hilt.android")
+    id("com.google.devtools.ksp")
 
 }
 
@@ -65,15 +67,37 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     // Room components
-    implementation("androidx.room:room-runtime:2.6.1")
-    annotationProcessor("androidx.room:room-compiler:2.6.1")
+    implementation(libs.androidx.room.room.runtime)
+    annotationProcessor(libs.androidx.room.room.compiler)
 
     // Kotlin Extensions and Coroutines support for Room
-    implementation("androidx.room:room-ktx:2.6.1")
+    implementation(libs.androidx.room.room.ktx)
 
     // Optional - Test helpers
-    testImplementation("androidx.room:room-testing:2.6.1")
-    implementation("androidx.room:room-runtime:2.6.1")
-    kapt("androidx.room:room-compiler:2.6.1")
-    implementation("androidx.room:room-ktx:2.6.1")
+    testImplementation(libs.androidx.room.testing)
+    implementation(libs.androidx.room.room.runtime)
+    ksp(libs.androidx.room.room.compiler)
+    implementation(libs.androidx.room.room.ktx)
+
+
+    //lifecycle view-model
+    implementation(libs.androidx.lifecycle.viewmodel.compose.v270)
+
+
+    //navigation compose
+    implementation(libs.androidx.navigation.compose)
+
+    // Dagger - Hilt
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
+    /*
+        implementation ("androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03")
+    */
+    ksp(libs.androidx.hilt.compiler) // Or a newer stable version
+
+
+    // For Compose integration
+    implementation(libs.androidx.hilt.navigation.compose)
+
+
 }
