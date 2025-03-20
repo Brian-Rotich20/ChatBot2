@@ -90,7 +90,7 @@ class ChatViewModel : ViewModel() {
 
     private val generativeModel = GenerativeModel(
         modelName = "gemini-1.5-flash",
-        apiKey = BuildConfig.apiKey
+        apiKey = BuildConfig.API_KEY
     )
 
     fun sendPrompt(context: Context) {
@@ -142,7 +142,7 @@ class ChatViewModel : ViewModel() {
         }
     }
 
-    fun getCurrentFormattedDate(): String {
+   private fun getCurrentFormattedDate(): String {
         val dateFormat = SimpleDateFormat("dd:MM:yyyy:HH:mmm:sss", Locale.getDefault())
         return dateFormat.format(Date())
     }

@@ -3,7 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.google.android.libraries.mapsplatform.secrets.gradle.plugin)
-    id ("kotlin-kapt") // Add this for Room
+    id("kotlin-kapt") // Add this for Room
 
 }
 
@@ -12,7 +12,7 @@ android {
     compileSdk = 35
 
     defaultConfig {
-        buildConfigField("String", "apiKey", "\"your_api_key_here\"")
+        //buildConfigField("String", "API_KEY", "\"AIzaSyCCBILjmpiTBaQRuJaQi9K98De9f0O8VcQ\"")
         applicationId = "com.example.chatbot"
         minSdk = 24
         targetSdk = 35
@@ -65,15 +65,15 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     // Room components
-    implementation ("androidx.room:room-runtime:2.6.1")
-    annotationProcessor ("androidx.room:room-compiler:2.6.1")
+    implementation("androidx.room:room-runtime:2.6.1")
+    annotationProcessor("androidx.room:room-compiler:2.6.1")
 
     // Kotlin Extensions and Coroutines support for Room
-    implementation ("androidx.room:room-ktx:2.6.1")
+    implementation("androidx.room:room-ktx:2.6.1")
 
     // Optional - Test helpers
-    testImplementation ("androidx.room:room-testing:2.6.1")
-    implementation ("androidx.room:room-runtime:2.6.1")
-    kapt ("androidx.room:room-compiler:2.6.1")
-    implementation ("androidx.room:room-ktx:2.6.1")
+    testImplementation("androidx.room:room-testing:2.6.1")
+    implementation("androidx.room:room-runtime:2.6.1")
+    kapt("androidx.room:room-compiler:2.6.1")
+    implementation("androidx.room:room-ktx:2.6.1")
 }
