@@ -87,6 +87,7 @@ class ChatViewModel : ViewModel() {
         prompt = value
     }
 
+
     private val generativeModel = GenerativeModel(
         modelName = "gemini-1.5-flash",
         apiKey = BuildConfig.apiKey
