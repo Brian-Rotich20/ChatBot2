@@ -45,6 +45,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.chatbot.layers.presentation.comps.ChatComp
 import com.example.chatbot.R
@@ -52,7 +53,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
-fun ChatScreen(model: ChatViewModel = viewModel()) {
+fun ChatScreen(
+    model: ChatViewModel = hiltViewModel()
+) {
     val uiState by model.uiState.collectAsState()
     val context = LocalContext.current
     var showTypingIndicator by remember { mutableStateOf(false) }
@@ -61,7 +64,7 @@ fun ChatScreen(model: ChatViewModel = viewModel()) {
     val allRooms by remember { model.getChatsRoom(context) }.collectAsState()
 
     val allChats by model.getChats(context).collectAsState()
-
+    model.allChats = allChats
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -136,7 +139,7 @@ fun ChatScreen(model: ChatViewModel = viewModel()) {
                     if (showTypingIndicator) TypingIndicator() else Spacer(Modifier.width(5.dp))
 
                 }
-                if (allChats.isNotEmpty()) {
+                if (model.allChats.isNotEmpty()) {
                     LazyColumn(modifier = Modifier.fillMaxHeight(0.75f)) {
                         items(allChats) {
                             ChatComp(it) {

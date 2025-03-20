@@ -17,6 +17,7 @@ import com.example.chatbot.layers.data.entities.Chat
 import com.example.chatbot.layers.data.entities.ChatRoom
 import com.google.ai.client.generativeai.GenerativeModel
 import com.google.ai.client.generativeai.type.content
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,8 +29,10 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import javax.inject.Inject
 
-class ChatViewModel : ViewModel() {
+@HiltViewModel
+class ChatViewModel @Inject constructor() : ViewModel() {
     private val _uiState: MutableStateFlow<UiState> = MutableStateFlow(UiState.Initial)
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
@@ -143,7 +146,7 @@ class ChatViewModel : ViewModel() {
         }
     }
 
-   private fun getCurrentFormattedDate(): String {
+    private fun getCurrentFormattedDate(): String {
         val dateFormat = SimpleDateFormat("dd:MM:yyyy:HH:mmm:sss", Locale.getDefault())
         return dateFormat.format(Date())
     }
