@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.chatbot.BuildConfig
@@ -27,6 +28,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -98,7 +100,7 @@ class ChatViewModel @Inject constructor(
             _mainState.value.roomId
         ).stateIn(
             viewModelScope,
-            SharingStarted.Lazily,
+            SharingStarted.WhileSubscribed(500),
             emptyList()
         )
     }
@@ -122,7 +124,61 @@ class ChatViewModel @Inject constructor(
         modelName = "gemini-1.5-flash",
         apiKey = BuildConfig.API_KEY
     )
+    fun sendPrompt(context: Context, keyboardController: SoftwareKeyboardController?) {
+        val newId = getCurrentFormattedDate()
 
+        if (prompt != "") {
+            _uiState.value = UiState.Loading
+            val roomId = _mainState.value.roomId
+
+            if (roomId == "...") {
+                viewModelScope.launch {
+                    delay(20)
+                    insertChatRoom(ChatRoom(id = newId, title = prompt))
+                    delay(20)
+                    updateCurrentIndex(0)
+                }
+            }
+
+            viewModelScope.launch(Dispatchers.IO) {
+                try {
+                    val response = generativeModel.generateContent(content { text(prompt) })
+                    response.text?.let { outputText ->
+                        _uiState.value = UiState.Success(outputText)
+
+                        insertChat(
+                            chat = Chat(
+                                id = 0,
+                                dateCreated = if (roomId != "...") roomId else newId,
+                                response = outputText,
+                                question = prompt
+                            )
+                        )
+
+                        delay(100)
+                        editPrompt("")
+
+                        // Hide keyboard after response is received
+                        withContext(Dispatchers.Main) {
+                            keyboardController?.hide()
+                        }
+                    } ?: run {
+                        _uiState.value = UiState.Error("No response from AI")
+                    }
+                } catch (e: Exception) {
+                    _uiState.value = UiState.Error(e.localizedMessage ?: "Unknown error")
+                }
+            }
+
+            if (_mainState.value.roomId == "...") {
+                updateCurrentRoomId(id = newId)
+            }
+        } else {
+            Toast.makeText(context, "Prompt is empty", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+/*
     fun sendPrompt(context: Context) {
         val newId = getCurrentFormattedDate()
 
@@ -148,7 +204,7 @@ class ChatViewModel @Inject constructor(
                 }
             }
             viewModelScope.launch(Dispatchers.IO) {
-              //  delay(200)
+                //  delay(200)
                 try {
                     val response = generativeModel.generateContent(
                         content { text(prompt) }
@@ -180,6 +236,7 @@ class ChatViewModel @Inject constructor(
             Toast.makeText(context, "prompt is empty", Toast.LENGTH_SHORT).show()
         }
     }
+*/
 
     private fun getCurrentFormattedDate(): String {
         val dateFormat = SimpleDateFormat("dd:MM:yyyy:HH:mmm:sss", Locale.getDefault())

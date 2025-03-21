@@ -99,6 +99,7 @@ dependencies {
     // For Compose integration
     implementation(libs.androidx.hilt.navigation.compose)
     implementation("androidx.appcompat:appcompat:1.6.1")
+   // implementation("com.google.accompanist:accompanist-scrollbar:0.31.2-alpha")
 
 
 }

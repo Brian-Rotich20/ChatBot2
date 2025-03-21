@@ -17,9 +17,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.HorizontalDivider
@@ -46,6 +50,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -53,6 +58,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.chatbot.R
 import com.example.chatbot.layers.presentation.comps.ChatComp
+import com.example.chatbot.layers.presentation.comps.drawVerticalScrollbar
 import com.example.chatbot.layers.presentation.theme.mediumShape
 import com.example.chatbot.layers.presentation.theme.smallShape
 import com.example.chatbot.layers.presentation.theme.smallText
@@ -71,16 +77,36 @@ fun ChatScreen(
     var showTypingIndicator by remember { mutableStateOf(false) }
     var moveInputToBottom by remember { mutableStateOf(false) }
     var shouldRefresh by remember { mutableStateOf(false) }
-
+    val listState = rememberLazyListState() // LazyColumn's state
+    // val scope = rememberCoroutineScope()
     val userInput = model.prompt
     val allRooms by remember { model.getChatsRoom() }.collectAsState()
+    val keyboardController = LocalSoftwareKeyboardController.current
 
-    val allChats by remember { model.getChats() }.collectAsState()
+    val allChats by remember(key1 = shouldRefresh) { model.getChats() }.collectAsState()
     model.updateCurrentChats(allChats)
 
+    LaunchedEffect(key1 = mainState.allChats.size) {
+        if (mainState.allChats.size > 2) {
+            listState.animateScrollToItem(mainState.allChats.size - 1)//we want it to scroll to the second lasts chat end
+
+        } else {
+            listState.animateScrollToItem(mainState.allChats.size)
+        }
+    }
+
+    LaunchedEffect(key1 = shouldRefresh) {
+        delay(800)
+        if (mainState.allChats.size > 2) {
+            listState.animateScrollToItem(mainState.allChats.size - 1)//we want it to scroll to the second lasts chat end
+
+        } else {
+            listState.animateScrollToItem(mainState.allChats.size)
+        }
+    }
 
     if (shouldRefresh) {
-        Toast.makeText(context, "called ${mainState.roomId}", Toast.LENGTH_SHORT).show()
+      //  Toast.makeText(context, "called ${mainState.roomId}", Toast.LENGTH_SHORT).show()
         val allChats by model.getChats().collectAsState()
         model.updateCurrentChats(allChats)
         shouldRefresh = false
@@ -136,7 +162,7 @@ fun ChatScreen(
                     allRooms.reversed().forEachIndexed { index, room ->
                         val day = getTimeDifference(room.id)
                         NavigationDrawerItem(
-                            label = { Text(room.title) },
+                            label = { Text(room.title, fontSize = smallText) },
                             selected = index == mainState.currentIndex,
                             onClick = {
                                 model.updateCurrentRoomId(
@@ -163,7 +189,7 @@ fun ChatScreen(
                                 .clip(smallShape)
                                 .background(
                                     MaterialTheme.colorScheme.inverseOnSurface.copy(
-                                        alpha = if (day == "just now") 0.9f else 0.3f
+                                        alpha = if (index == mainState.currentIndex) 0.09f else 0.3f
                                     )
                                 )
                         )
@@ -180,6 +206,7 @@ fun ChatScreen(
                 .fillMaxSize()
                 .padding(16.dp)
         ) {
+
             Column(
                 modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.SpaceBetween
@@ -216,8 +243,13 @@ fun ChatScreen(
                     )
 
                 }
-                if (allChats.isNotEmpty()) {
-                    LazyColumn(modifier = Modifier.fillMaxHeight(0.75f)) {
+                if (mainState.allChats.isNotEmpty()) {
+                    LazyColumn(
+                        state = listState,
+                        modifier = Modifier.fillMaxHeight(0.75f)
+                            .fillMaxWidth()
+                            .drawVerticalScrollbar(listState) // Apply the custom scrollbar
+                    ) {
                         items(mainState.allChats) {
                             ChatComp(it) {
                                 model.copyToClipboard(
@@ -227,6 +259,7 @@ fun ChatScreen(
                             }
                         }
                     }
+
                 } else {
                     Column(
                         modifier = Modifier.fillMaxWidth(),
@@ -262,7 +295,10 @@ fun ChatScreen(
                                     modifier = Modifier
                                         .size(24.dp)
                                         .clickable {
-                                            model.sendPrompt(context)
+                                            model.sendPrompt(
+                                                context = context,
+                                                keyboardController = keyboardController
+                                            )
                                         },
                                     tint = if (model.prompt.isNotEmpty()) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.inverseSurface
                                 )
@@ -271,7 +307,9 @@ fun ChatScreen(
                     )
                 }
             }
+
         }
+
     }
 }
 
@@ -297,6 +335,22 @@ fun TypingTextAnimation(fullText: String, typingSpeed: Long = 50L, textSize: Int
     }
 }
 
+@Composable
+fun VerticalScrollbar(modifier: Modifier, scrollState: LazyListState) {
+    val firstVisibleItemIndex = scrollState.firstVisibleItemIndex
+    val itemsCount = scrollState.layoutInfo.totalItemsCount
+
+    if (itemsCount > 0) {
+        Box(
+            modifier = modifier
+                .width(4.dp)
+                .background(Color.Gray, RoundedCornerShape(50))
+                .fillMaxHeight(
+                    (firstVisibleItemIndex + 1) / itemsCount.toFloat()
+                )
+        )
+    }
+}
 
 // Typing Indicator with Animated Dots
 @Composable
