@@ -11,10 +11,10 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.chatbot.BuildConfig
-import com.example.chatbot.layers.data.ChatRepo
-import com.example.chatbot.layers.data.ChatRoomRepo
 import com.example.chatbot.layers.data.entities.Chat
 import com.example.chatbot.layers.data.entities.ChatRoom
+import com.example.chatbot.layers.data.repos.ChatRepos
+import com.example.chatbot.layers.data.repos.ChatRoomRepo
 import com.google.ai.client.generativeai.GenerativeModel
 import com.google.ai.client.generativeai.type.content
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -33,7 +33,10 @@ import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
-class ChatViewModel @Inject constructor() : ViewModel() {
+class ChatViewModel @Inject constructor(
+    private val chatRepos: ChatRepos,
+    private val chatRoomRepo: ChatRoomRepo
+) : ViewModel() {
     private val _uiState: MutableStateFlow<UiState> = MutableStateFlow(UiState.Initial)
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
     private val _mainState = MutableStateFlow(MainState())
@@ -78,23 +81,20 @@ class ChatViewModel @Inject constructor() : ViewModel() {
     }
 
 
-    fun insertChat(chat: Chat, context: Context) {
-        val repo = ChatRepo(context)
+    fun insertChat(chat: Chat) {
         viewModelScope.launch {
-            repo.insertChat(chat)
+            chatRepos.insertChat(chat)
         }
     }
 
-    fun insertChatRoom(chatRoom: ChatRoom, context: Context) {
-        val repo = ChatRoomRepo(context)
+    fun insertChatRoom(chatRoom: ChatRoom) {
         viewModelScope.launch {
-            repo.insertChatRoom(chatRoom)
+            chatRoomRepo.insertChatRoom(chatRoom)
         }
     }
 
-    fun getChats(context: Context): StateFlow<List<Chat>> {
-        val repo = ChatRepo(context)
-        return repo.getAllChats(
+    fun getChats(): StateFlow<List<Chat>> {
+        return chatRepos.getAllChats(
             _mainState.value.roomId
         ).stateIn(
             viewModelScope,
@@ -103,9 +103,8 @@ class ChatViewModel @Inject constructor() : ViewModel() {
         )
     }
 
-    fun getChatsRoom(context: Context): StateFlow<List<ChatRoom>> {
-        val repo = ChatRoomRepo(context)
-        return repo.getAllChatRooms(
+    fun getChatsRoom(): StateFlow<List<ChatRoom>> {
+        return chatRoomRepo.getAllChatRooms(
         ).stateIn(
             viewModelScope,
             SharingStarted.Lazily,
@@ -139,8 +138,7 @@ class ChatViewModel @Inject constructor() : ViewModel() {
                         chatRoom = ChatRoom(
                             id = newId,
                             title = prompt
-                        ),
-                        context = context
+                        )
                     )
                     delay(20)
 
@@ -163,8 +161,7 @@ class ChatViewModel @Inject constructor() : ViewModel() {
                                 dateCreated = if (roomId != "...") roomId else newId,
                                 response = outputText,
                                 question = prompt
-                            ),
-                            context = context
+                            )
                         )
 
                         delay(100)

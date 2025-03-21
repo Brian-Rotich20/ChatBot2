@@ -1,14 +1,12 @@
-package com.example.chatbot.layers.data
+package com.example.chatbot.layers.domain.repoImpl
 
-import android.content.Context
-import com.example.chatbot.layers.domain.MainDatabase
 import com.example.chatbot.layers.data.dao.ChatDao
 import com.example.chatbot.layers.data.entities.Chat
+import com.example.chatbot.layers.data.repos.ChatRepos
 import kotlinx.coroutines.flow.Flow
 
-class ChatRepo(context: Context) : ChatDao {
-    private val db = MainDatabase.getDatabase(context)
-    private val dao = db.chatDao()
+class ChatRepoImpl(private val dao: ChatDao) : ChatRepos {
+
     override fun getAllChats(date: String): Flow<List<Chat>> {
         return dao.getAllChats(date)
     }
