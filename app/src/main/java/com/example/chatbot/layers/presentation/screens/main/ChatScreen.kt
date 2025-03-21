@@ -2,6 +2,7 @@ package com.example.chatbot.layers.presentation.screens.main
 
 
 import android.os.Build
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -75,10 +76,12 @@ fun ChatScreen(
     val userInput = model.prompt
     val allRooms by remember { model.getChatsRoom(context) }.collectAsState()
 
-    val allChats by remember { model.getChats(context) }.collectAsState()
+    val allChats by  model.getChats(context).collectAsState()
     model.updateCurrentChats(allChats)
 
+
     if (shouldRefresh) {
+        Toast.makeText(context, "called ${mainState.roomId}", Toast.LENGTH_SHORT).show()
         val allChats by model.getChats(context).collectAsState()
         model.updateCurrentChats(allChats)
         shouldRefresh = false
@@ -203,7 +206,15 @@ fun ChatScreen(
                             }
                     )
                     Text(text = "AI Chatbot", style = MaterialTheme.typography.headlineMedium)
-                    if (showTypingIndicator) TypingIndicator() else Spacer(Modifier.width(5.dp))
+                    Icon(
+                        painter = painterResource(R.drawable.add),
+                        contentDescription = "",
+                        modifier = Modifier.clickable {
+                            model.updateCurrentRoomId("...")
+                            model.updateCurrentChats(emptyList())
+
+                        }
+                    )
 
                 }
                 if (allChats.isNotEmpty()) {
@@ -243,16 +254,20 @@ fun ChatScreen(
                         label = { Text("Enter your message") },
                         modifier = Modifier.fillMaxWidth(),
                         trailingIcon = {
-                            Icon(
-                                painter = painterResource(R.drawable.send),
-                                contentDescription = "Send",
-                                modifier = Modifier
-                                    .size(24.dp)
-                                    .clickable {
-                                        model.sendPrompt(context)
-                                    },
-                                tint = if (model.prompt.isNotEmpty()) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.inverseSurface
-                            )
+                            if (showTypingIndicator) {
+                                TypingIndicator()
+                            } else {
+                                Icon(
+                                    painter = painterResource(R.drawable.send),
+                                    contentDescription = "Send",
+                                    modifier = Modifier
+                                        .size(24.dp)
+                                        .clickable {
+                                            model.sendPrompt(context)
+                                        },
+                                    tint = if (model.prompt.isNotEmpty()) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.inverseSurface
+                                )
+                            }
                         }
                     )
                 }

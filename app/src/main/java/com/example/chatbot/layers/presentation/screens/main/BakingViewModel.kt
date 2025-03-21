@@ -51,6 +51,7 @@ class ChatViewModel @Inject constructor() : ViewModel() {
             )
         }
     }
+
     fun updateCurrentRooms(list: List<ChatRoom>) {
         _mainState.update {
             it.copy(
@@ -124,6 +125,8 @@ class ChatViewModel @Inject constructor() : ViewModel() {
     )
 
     fun sendPrompt(context: Context) {
+        val newId = getCurrentFormattedDate()
+
         if (prompt != "") {
             _uiState.value = UiState.Loading
             val roomId = _mainState.value.roomId
@@ -131,11 +134,10 @@ class ChatViewModel @Inject constructor() : ViewModel() {
                 //create a new room
                 //insert the chat
                 viewModelScope.launch {
-                    updateCurrentRoomId(getCurrentFormattedDate())
                     delay(20)
                     insertChatRoom(
                         chatRoom = ChatRoom(
-                            id = roomId,
+                            id = newId,
                             title = prompt
                         ),
                         context = context
@@ -148,6 +150,7 @@ class ChatViewModel @Inject constructor() : ViewModel() {
                 }
             }
             viewModelScope.launch(Dispatchers.IO) {
+              //  delay(200)
                 try {
                     val response = generativeModel.generateContent(
                         content { text(prompt) }
@@ -157,12 +160,13 @@ class ChatViewModel @Inject constructor() : ViewModel() {
                         insertChat(
                             chat = Chat(
                                 id = 0,
-                                dateCreated = roomId,
+                                dateCreated = if (roomId != "...") roomId else newId,
                                 response = outputText,
                                 question = prompt
                             ),
                             context = context
                         )
+
                         delay(100)
                         editPrompt("")
                     } ?: run {
@@ -171,6 +175,9 @@ class ChatViewModel @Inject constructor() : ViewModel() {
                 } catch (e: Exception) {
                     _uiState.value = UiState.Error(e.localizedMessage ?: "Unknown error")
                 }
+            }
+            if (_mainState.value.roomId == "...") {
+                updateCurrentRoomId(id = newId)
             }
         } else {
             Toast.makeText(context, "prompt is empty", Toast.LENGTH_SHORT).show()
